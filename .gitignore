@@ -1,0 +1,7 @@
+#files
+.env
+
+#directories
+venv
+/venv
+./venv
