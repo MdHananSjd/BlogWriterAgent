@@ -1,0 +1,11 @@
+3 agent behaviour patterns
+ - Sequential agents
+ - Reactive agents
+ - Deliberative/Planning agents
+
+
+Building a blog-writing agent with Google ADK
+
+- conductor (takes user topic and delegates tasks to the right tools)
+- planner (Generates a structured blog outline based on the delegated task)
+- writer (takes the structured outline and drafts a full blog post)
