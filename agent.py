@@ -4,7 +4,7 @@ from pathlib import Path
 import datetime
 
 from dotenv import load_dotenv
-from google.adk.agent import Agent, LoopAgent
+from google.adk import Agent, LoopAgent
 from google.adk.tools import agent_tool
 
 load_dotenv()

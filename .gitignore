@@ -25,6 +25,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+/.adk
+/__pycache__/
 
 # PyInstaller
 #   Usually these files are written by a python script from a template
@@ -149,6 +151,7 @@ activemq-data/
 
 # Environments
 .env
+env
 .envrc
 .venv
 env/
