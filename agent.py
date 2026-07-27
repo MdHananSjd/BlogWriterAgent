@@ -11,6 +11,20 @@ load_dotenv()
 
 MODEL = os.getenv("MODEL", "gemini-flash-latest")
 
+class OutlineValidationChecker(Agent):
+    def __init__(self):
+        super().__init__(
+            name="OutlineValidationChecker",
+            model=MODEL,
+            description="Validates that the outline is usable",
+            instruction = """
+Check the outline in state 'blog_outline'. If it has a title, intro, 
+4-6 sections, and a conclusion, respond exactly "ok".
+Otherwise respond exactly "retry" and list missing pieces.
+""",
+            output_key = "validation_result",
+        )
+        
 blog_planner = Agent(
     name = "BlogPlanner",
     model = MODEL,
@@ -26,4 +40,29 @@ If 'codebase_context' exists in state, weave in specific sections/snippets.
 Return only the outline in Markdown.
 """,
     output_key = "blog_outline",
+)
+
+robust_blog_planner = LoopAgent(
+    name="RobustBlogPlanner",
+    description="Retries planning if validation fails.",
+    sub_agents=[blog_planner,
+                OutlineValidationChecker()],
+                max_iterations=3,
+)
+
+blog_writer = Agent(
+    name = "BlogWriter",
+    model=MODEL,
+    description = "Writes a technical blog post from the outline",
+    instruction= """
+Write a complete Markdown article from the outline in 'blog_outline'.
+
+Guidelines:
+- Audience: software engineers: skip basics and docus on practical insight.
+- Explain both the 'how' and 'why'.
+- Include concise code snippets when helpful.
+- Follow the outline's structure(H2/H3).
+- Output only the final article in Marksdown (no fence around the whole post).
+""",
+    output_key = "blog_post",
 )
