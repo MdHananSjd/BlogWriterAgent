@@ -86,3 +86,25 @@ robust_blog_writer = LoopAgent(
     sub_agents= [blog_writer, BlogPostValidationChecker()],
     max_iterations=3,
 )
+
+#expose planner and writer as tools so the main agent can call them explicitly
+planner_tool = agent_tool.AgentTool(agent = robust_blog_planner)
+writer_tool = agent_tool.AgentTool(agent = robust_blog_writer)
+
+root_agent = Agent(
+    name="Blogger",
+    model = MODEL,
+    description= "Minimal multi-agent blogger than plans and writes",
+    instruction=f"""
+If the user gives a topic:
+1) Call the planner tool to generate the outline.
+2) Call the writer tool to produce the full draft.
+3) End with3 alternate titles and 2 tweet-length hookls.
+
+Date: {datetime.datetime.now().strftime("%Y-%m-%d")}
+""",
+    tools = [
+    planner_tool, #calls RobustBlogPlanner
+    writer_tool, #calls RobustBlogWriter
+    ]
+)
