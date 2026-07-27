@@ -24,6 +24,20 @@ Otherwise respond exactly "retry" and list missing pieces.
 """,
             output_key = "validation_result",
         )
+
+class BlogPostValidationChecker(Agent):
+    def __init__(self):
+        super().__init__(
+            name = "BlogPostValidationChecker",
+            model = MODEL,
+            description= "Validates the final post",
+            instruction= """
+Check 'blog_post' for: intro, clear sections matching the outline,
+conclusion and technical clarity.
+If passes, respont "ok". Else respont "retry" with the specific fixes.
+""",
+            output_key= "validation_result",
+        )
         
 blog_planner = Agent(
     name = "BlogPlanner",
@@ -45,9 +59,8 @@ Return only the outline in Markdown.
 robust_blog_planner = LoopAgent(
     name="RobustBlogPlanner",
     description="Retries planning if validation fails.",
-    sub_agents=[blog_planner,
-                OutlineValidationChecker()],
-                max_iterations=3,
+    sub_agents=[blog_planner, OutlineValidationChecker()],
+    max_iterations=3,
 )
 
 blog_writer = Agent(
@@ -65,4 +78,11 @@ Guidelines:
 - Output only the final article in Marksdown (no fence around the whole post).
 """,
     output_key = "blog_post",
+)
+
+robust_blog_writer = LoopAgent(
+    name ="RobustBlogWriter",
+    description="Retries writing if validation fails.",
+    sub_agents= [blog_writer, BlogPostValidationChecker()],
+    max_iterations=3,
 )
